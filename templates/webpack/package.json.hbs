@@ -1,0 +1,71 @@
+{
+  "name": "{{title}}",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "scripts": {
+    "serve": "webpack serve --mode development",
+{{#if markup}}
+    "build": "webpack --mode production",
+    "lint:all": "run-p lint:script lint:style",
+    "lint:script": "eslint \"./src/**/*.ts\" --fix",
+{{else if email}}
+    "build": "run-s compile-templates remove-useless",
+    "compile-templates": "webpack --mode production",
+    "remove-useless": "rimraf dist/main.js dist/runtime.js",
+{{/if}}
+    "lint:style": "stylelint \"./src/**/*.scss\" --fix",
+    "prettier": "prettier --write \"src/**/*.*(ts|js|json|html)\"",
+    "pretty-quick": "pretty-quick --staged --pattern \"src/**/*.*(ts|js|json|html)\"",
+    "hook:pre-commit": "run-s pretty-quick lint:all",
+    "prepare": "npx husky install && npx husky set .husky/pre-commit \"npm run hook:pre-commit\" && git add .husky/pre-commit"
+  },
+  "devDependencies": {
+{{#if markup}}
+    "@typescript-eslint/eslint-plugin": "4.31.2",
+    "@typescript-eslint/parser": "4.31.2",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^3.4.1",
+    "eslint-webpack-plugin": "^3.0.1",
+    "reset-css": "^5.0.1",
+    "webpack-bundle-analyzer": "^4.4.2",
+{{else if email}}
+    "inline-css": "^4.0.1",
+    "rimraf": "^3.0.2",
+{{/if}}
+    "@types/webpack": "^5.28.0",
+    "clean-webpack-plugin": "^4.0.0",
+    "copy-webpack-plugin": "^9.0.1",
+    "css-loader": "^6.7.1",
+    "file-loader": "^6.2.0",
+    "handlebars": "^4.7.7",
+    "handlebars-loader": "^1.7.1",
+    "html-webpack-plugin": "^5.3.2",
+    "husky": "^8.0.1",
+    "mini-css-extract-plugin": "^2.3.0",
+    "npm-run-all": "^4.1.5",
+    "postcss-scss": "^4.0.5",
+    "prettier": "^2.4.1",
+    "pretty-quick": "^3.1.1",
+    "resolve-url-loader": "^4.0.0",
+    "sass": "^1.53.0",
+    "sass-loader": "^13.1.0",
+    "style-loader": "^3.3.1",
+    "stylelint": "^14.14.0",
+    "stylelint-config-standard": "^29.0.0",
+    "stylelint-declaration-strict-value": "^1.9.1",
+    "stylelint-no-unsupported-browser-features": "^6.0.1",
+    "stylelint-scss": "^4.3.0",
+    "stylelint-webpack-plugin": "^3.3.0",
+    "ts-loader": "^9.2.6",
+    "typescript": "^4.4.3",
+    "url-loader": "^4.1.1",
+    "webpack": "^5.54.0",
+    "webpack-cli": "^4.8.0",
+    "webpack-dev-server": "^4.3.0"
+  }
+}

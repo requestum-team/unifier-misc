@@ -1,0 +1,128 @@
+const path = require('path');
+const CopyPlugin = require('copy-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const StylelintWebpackPlugin = require('stylelint-webpack-plugin');
+{{#if email}}
+const InlineCSSPlugin = require('./misc/plugins/inline-css.plugin.js').default;
+{{else if markup}}
+const ESLintWebpackPlugin = require('eslint-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+{{/if}}
+const generateHtmlPlugins = require('./misc/helpers/generate-html-plugins.function.js');
+
+const config = {
+{{#if markup}}
+  entry: './src/scripts/index.ts',
+{{else if email}}
+  entry: './src/entry.js',
+{{/if}}
+  output: {
+    path: path.resolve(__dirname, 'dist'),
+    filename: '[name].js'
+  },
+  devServer: {
+    port: 8080,
+    hot: true,
+    watchFiles: ['src/**/*']
+  },
+  module: {
+    rules: [
+{{#if markup}}
+      {
+        test: /\.ts(x)?$/,
+        loader: 'ts-loader',
+        exclude: /node_modules/
+      },
+{{/if}}
+      {
+        test: /\.(sa|sc|c)ss$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          {
+            loader: 'css-loader',
+            options: {
+              sourceMap: true
+            }
+          },
+          {
+            loader: 'resolve-url-loader',
+            options: {
+              root: path.resolve(__dirname, 'src')
+            }
+          },
+          {
+            loader: 'sass-loader',
+            options: {
+              sourceMap: true
+            }
+          }
+        ]
+      },
+      {
+        test: /\.svg$/,
+        use: 'file-loader'
+      },
+      {
+        test: /\.hbs$/,
+        use: [
+          {
+            loader: 'handlebars-loader',
+            options: {
+              helperDirs: [path.join(__dirname, 'src', 'templates', 'helpers')],
+              partialDirs: [path.join(__dirname, 'src', 'templates', 'partials')]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  resolve: {
+{{#if markup}}
+    extensions: ['.tsx', '.ts', '.js']
+{{else if email}}
+    extensions: ['.js']
+{{/if}}
+  },
+  optimization: {
+    runtimeChunk: 'single',
+    splitChunks: {
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendors',
+          chunks: 'all'
+        }
+      }
+    }
+  }
+};
+
+module.exports = (env, argv) => {
+  config.plugins = [
+    new CopyPlugin({
+      patterns: [{ from: 'src/assets', to: 'assets', globOptions: { ignore: ['**/.gitkeep'] }, noErrorOnMissing: true }]
+    }),
+    ...generateHtmlPlugins(__dirname, argv.mode === 'development'),
+{{#if markup}}
+    new BundleAnalyzerPlugin({
+      analyzerMode: 'static',
+      reportFilename: './../tmp/report.html',
+      openAnalyzer: false
+    }),
+{{/if}}
+    new MiniCssExtractPlugin(),
+{{#if markup}}
+    new ESLintWebpackPlugin({
+      extensions: ['ts']
+    }),
+{{/if}}
+    new StylelintWebpackPlugin(),
+{{#if email}}
+    new InlineCSSPlugin(),
+{{/if}}
+    new CleanWebpackPlugin()
+  ];
+
+  return config;
+};

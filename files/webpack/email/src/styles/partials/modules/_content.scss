@@ -1,0 +1,29 @@
+@import "../../variables/variables";
+
+.content {
+  width: 400px;
+  box-sizing: border-box;
+
+  .header &,
+  .footer & {
+    text-align: center;
+  }
+
+  .header & {
+    background-color: $color-dark-charcoal;
+    padding: 28px 0;
+  }
+
+  .main & {
+    height: 100%;
+    vertical-align: top;
+    background-color: $color-white;
+    padding: 15px 20px;
+  }
+
+  .footer & {
+    font-size: 14px;
+    padding: 30px 20px;
+    background-color: $color-cultured;
+  }
+}

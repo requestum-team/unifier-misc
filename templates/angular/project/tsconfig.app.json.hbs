@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../out-tsc/app",
+    "types": []
+  },
+  "files": [{{#if shouldNotUsePolyfillsJs}}"./src/main.ts"{{else}}"./src/main.ts", "../../src/polyfills.ts"{{/if}}],
+  "include": ["src/**/*.ts"],
+  "exclude": ["src/test.ts", "src/**/*.spec.ts"]
+}

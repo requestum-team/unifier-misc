@@ -1,0 +1,6 @@
+{
+  "CLIENT_APP_URL": "{{CLIENT_APP_URL}}",
+  "ADMIN_APP_URL": "{{ADMIN_APP_URL}}",
+  "IMAGE_URL": "{{CLIENT_APP_URL}}/assets/img",
+  "TOKEN": "{{TOKEN}}"
+}
